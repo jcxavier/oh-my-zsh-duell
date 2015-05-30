@@ -60,10 +60,16 @@ __first_command_list ()
     _wanted tasks expl 'help' compadd $tasks
 }
 
-__duell-create() {
+_build_plugin_list() {
+    _wanted application expl 'build' compadd $(command grep -hor "\"duellbuild.*\"" ~/.duell/lib_list | sort -u | awk '{ $0 = substr($0, 12); print substr($0, 0, length($0) -1); }')
 }
 
-__duell-build() {
+_create_plugin_list() {
+    _wanted application expl 'create' compadd $(command grep -hor "\"duellcreate.*\"" ~/.duell/lib_list | sort -u | awk '{ $0 = substr($0, 13); print substr($0, 0, length($0) -1); }')
+}
+
+_setup_plugin_list() {
+    _wanted application expl 'setup' compadd $(command grep -hor "\"duellsetup.*\"" ~/.duell/lib_list | sort -u | awk '{ $0 = substr($0, 12); print substr($0, 0, length($0) -1); }')
 }
 
 __duell-setup() {
@@ -89,16 +95,16 @@ case $state in
   (options)
     case $line[1] in
         (create)
-            __duell-create
             _arguments \
-                $_inherited_options
+                $_inherited_options \
+                ':feature:_create_plugin_list'
         ;;
 
         (build)
-            __duell-build
             _arguments \
                 $_inherited_options \
-                $_build_options
+                $_build_options \
+                ':feature:_build_plugin_list'
         ;;
 
         (update)
@@ -108,10 +114,10 @@ case $state in
         ;;
 
         (setup)
-            __duell-setup
             _arguments \
                 $_inherited_options \
-                $_setup_options
+                $_setup_options \
+                ':feature:_setup_plugin_list'
         ;;
 
         (self_setup)
