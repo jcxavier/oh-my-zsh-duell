@@ -9,6 +9,7 @@ _1st_arguments=(
     'setup:Sets up the environment that needs to be run once for a specified platform.'
     'self_setup:Basic setup for the duell tool. Run me first!'
     'repo_list:Shows the repository list. You can add and remove urls from it.'
+    '-help:Prints the help banner for the duell tool.'
 )
 
 local -a _inherited_options
@@ -28,12 +29,19 @@ _build_options=(
     '(-test)-test[Launches a server listening to a configured port and then runs the application.]' \
     '(-clean)-clean[Clean up the Export folder and the native extensions. Nothing else is done except cleaning up.]' \
     '(-noprebuild)-noprebuild[Does not parse the configuration, meaning the changes to the .xml files are not processed.]' \
-    '(-nobuild)-nobuild[Does not build. Haxe code does not get recompiled, and target platform app packages are not remade.]'
+    '(-nobuild)-nobuild[Does not build. Haxe code does not get recompiled and platform app packages are not remade.]'
 )
 
 local -a _build_android_options
 _build_android_options=(
-    '(-debug)-debug[Use this argument if you want to build in debug.]'
+    '(-debug)-debug[Use this argument if you want to build in debug.]' \
+    '(-ndkgdb)-ndkgdb[Use this argument if you want to launch gdb on the running app.]' \
+    '(-armv6)-armv6[Use this if you want to build for armv6.]' \
+    '(-armv7)-armv7[Use this if you want to build for armv7.]' \
+    '(-x86)-x86[Use this argument if you want to build specifically for x86 platforms.]' \
+    '(-fulllogcat)-fulllogcat[Use this argument if you want to see the complete logcat as opposed to seeing a filtered one.]' \
+    '(-emulatorname)-emulatorname[Specify the name of the emulator that you want to run when the build starts.]' \
+    '(-emulator)-emulator[Boot the emulator to run the app (x86 if -x86 is set, armv7 otherwise).]'
 )
 
 local -a _build_ios_options
@@ -79,14 +87,11 @@ _repo_list_options=(
     '(-remove)-remove[Removes a url from the repository list.]'
 )
 
-__first_command_list ()
-{
+__first_command_list() {
     local expl
     declare -a tasks
 
-    tasks=(create build update setup self_setup repo_list)
-
-    _wanted tasks expl 'help' compadd $tasks
+    tasks=(create build update setup self_setup repo_list -help)
 }
 
 _build_plugin_list() {
@@ -101,8 +106,7 @@ _setup_plugin_list() {
     _wanted application expl 'setup' compadd $(command grep -hor "\"duellsetup.*\"" ~/.duell/lib_list | sort -u | awk '{ $0 = substr($0, 12); print substr($0, 0, length($0) -1); }')
 }
 
-_duell_build()
-{
+_duell_build() {
     local curcontext="$curcontext" state line
     typeset -A opt_args
 
