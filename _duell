@@ -1,0 +1,112 @@
+#compdef duell
+#autoload
+
+# TODO: complete this
+local -a _1st_arguments
+_1st_arguments=(
+    'create:Used for creating a default project in the current folder.'
+    'build:Build lollolollololol'
+    'update:Update lolollolol'
+    'setup:Setup lolollolol'
+    'self_setup:Self setup lolollolol'
+    'repo_list:Repo list lolollolol'
+)
+
+local -a _inherited_options
+_inherited_options=(
+    '(-verbose)-verbose[Every possible logging information will be shown.]' \
+    '(-mute)-mute[No output will be printed at all.]' \
+    '(-no-color)-no-color[Color markup will be stripped out of the output.]' \
+    '(-yestoall)-yestoall[Answers "y" to all questions and default to all questions.]' \
+    '(-help)-help[Show help banner of specified command.]'
+)
+
+local -a _build_options
+_build_options=(
+    '(-fast)-fast[Use this command if you are just iterating haxe code, and want to quickly build and run the app.]' \
+    '(-publish)-publish[TODO WRITE ME]' \
+    '(-norun)-norun[TODO WRITE ME]' \
+    '(-test)-test[TODO WRITE ME]' \
+    '(-clean)-clean[TODO WRITE ME]' \
+    '(-noprebuild)-noprebuild[TODO WRITE ME]' \
+    '(-nobuild)-publish[TODO WRITE ME]'
+)
+
+local -a _update_options
+_update_options=(
+    '(-overridebranch)-overridebranch[asdfsad]'
+)
+
+__first_command_list ()
+{
+    local expl
+    declare -a tasks
+
+    tasks=(create build update setup self_setup repo_list)
+
+    _wanted tasks expl 'help' compadd $tasks
+}
+
+__duell-create() {
+}
+
+__duell-build() {
+}
+
+__duell-update() {
+}
+
+__duell-setup() {
+}
+
+__duell-self_setup() {
+}
+
+__duell-repo_list() {
+}
+
+local curcontext="$curcontext" state line
+typeset -A opt_args
+
+_arguments -C \
+    $_inherited_options \
+    ':command:->command' \
+    '*::options:->options'
+
+case $state in
+  (command)
+      _describe -t commands "duell" _1st_arguments
+      return
+  ;;
+
+  (options)
+    case $line[1] in
+        (create)
+            __duell-create
+        ;;
+
+        (build)
+            __duell-build
+            _arguments \
+                $_inherited_options \
+                $_build_options
+        ;;
+
+        (update)
+            __duell-update
+        ;;
+
+        (setup)
+            __duell-setup
+        ;;
+
+        (self_setup)
+            __duell-self_setup
+        ;;
+
+        (repo_list)
+            __duell-repo_list
+        ;;
+    esac
+  ;;
+esac
