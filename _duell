@@ -5,11 +5,11 @@
 local -a _1st_arguments
 _1st_arguments=(
     'create:Used for creating a default project in the current folder.'
-    'build:Build lollolollololol'
-    'update:Update lolollolol'
-    'setup:Setup lolollolol'
-    'self_setup:Self setup lolollolol'
-    'repo_list:Repo list lolollolol'
+    'build:Builds the specified platform. Needs to be run in a folder with a duell_project.xml.'
+    'update:Checks all the dependencies of the current project in the current directory and updates them.'
+    'setup:Sets up the environment that needs to be run once for a specified platform.'
+    'self_setup:Basic setup for the duell tool. Run me first!'
+    'repo_list:Shows the repository list. You can add and remove urls from it.'
 )
 
 local -a _inherited_options
@@ -23,7 +23,7 @@ _inherited_options=(
 
 local -a _build_options
 _build_options=(
-    '(-fast)-fast[Use this command if you are just iterating haxe code, and want to quickly build and run the app.]' \
+    '(-fast)-fast[Use this command if you are just iterating haxe code.]' \
     '(-publish)-publish[TODO WRITE ME]' \
     '(-norun)-norun[TODO WRITE ME]' \
     '(-test)-test[TODO WRITE ME]' \
@@ -59,9 +59,6 @@ __duell-update() {
 __duell-setup() {
 }
 
-__duell-self_setup() {
-}
-
 __duell-repo_list() {
 }
 
@@ -83,6 +80,8 @@ case $state in
     case $line[1] in
         (create)
             __duell-create
+            _arguments \
+                $_inherited_options
         ;;
 
         (build)
@@ -94,18 +93,26 @@ case $state in
 
         (update)
             __duell-update
+            _arguments \
+                $_inherited_options \
+                $_update_options
         ;;
 
         (setup)
             __duell-setup
+            _arguments \
+                $_inherited_options
         ;;
 
         (self_setup)
-            __duell-self_setup
+            _arguments \
+                $_inherited_options
         ;;
 
         (repo_list)
             __duell-repo_list
+            _arguments \
+                $_inherited_options
         ;;
     esac
   ;;
