@@ -1,7 +1,6 @@
 #compdef duell
 #autoload
 
-# TODO: complete this
 local -a _1st_arguments
 _1st_arguments=(
     'create:Used for creating a default project in the current folder.'
@@ -24,17 +23,31 @@ _inherited_options=(
 local -a _build_options
 _build_options=(
     '(-fast)-fast[Use this command if you are just iterating haxe code.]' \
-    '(-publish)-publish[TODO WRITE ME]' \
-    '(-norun)-norun[TODO WRITE ME]' \
-    '(-test)-test[TODO WRITE ME]' \
-    '(-clean)-clean[TODO WRITE ME]' \
-    '(-noprebuild)-noprebuild[TODO WRITE ME]' \
-    '(-nobuild)-publish[TODO WRITE ME]'
+    '(-publish)-publish[Outputs a releasable package into the configured "Publish" folder.]' \
+    '(-norun)-norun[The application won'\''t run, just runs the prebuild and build steps.]' \
+    '(-test)-test[Launches a server listening to a configured port and then runs the application.]' \
+    '(-clean)-clean[Clean up the Export folder and the native extensions. Nothing else is done except cleaning up.]' \
+    '(-noprebuild)-noprebuild[Does not parse the configuration, meaning the changes to the .xml files are not processed.]' \
+    '(-nobuild)-nobuild[Does not build. Haxe code does not get recompiled, and target platform app packages are not remade.]'
 )
 
 local -a _update_options
 _update_options=(
-    '(-overridebranch)-overridebranch[asdfsad]'
+    '(-overridebranch)-overridebranch[If existent, sets the versions of each library to the specified branch.]'
+)
+
+local -a _setup_options
+_setup_options=(
+    '(-v)-v[Specifies the required setup version.]'
+)
+
+local -a _repo_list_options
+_repo_list_options=(
+    '(-add)-add[Adds a new url to the end of the repository list.]' \
+    '(-removeAll)-removeAll[ARemoves all urls from the repository list. Resets to the default url.]' \
+    '(-addFront)-addFront[Adds a new url to front of the repository list.]' \
+    '(-reverse)-reverse[Reverses the order of all urls in the repository list.]' \
+    '(-remove)-remove[Removes a url from the repository list.]'
 )
 
 __first_command_list ()
@@ -51,9 +64,6 @@ __duell-create() {
 }
 
 __duell-build() {
-}
-
-__duell-update() {
 }
 
 __duell-setup() {
@@ -92,7 +102,6 @@ case $state in
         ;;
 
         (update)
-            __duell-update
             _arguments \
                 $_inherited_options \
                 $_update_options
@@ -101,7 +110,8 @@ case $state in
         (setup)
             __duell-setup
             _arguments \
-                $_inherited_options
+                $_inherited_options \
+                $_setup_options
         ;;
 
         (self_setup)
@@ -112,7 +122,8 @@ case $state in
         (repo_list)
             __duell-repo_list
             _arguments \
-                $_inherited_options
+                $_inherited_options \
+                $_repo_list_options
         ;;
     esac
   ;;
