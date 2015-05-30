@@ -31,6 +31,35 @@ _build_options=(
     '(-nobuild)-nobuild[Does not build. Haxe code does not get recompiled, and target platform app packages are not remade.]'
 )
 
+local -a _build_android_options
+_build_android_options=(
+    '(-debug)-debug[Use this argument if you want to build in debug.]'
+)
+
+local -a _build_ios_options
+_build_ios_options=(
+    '(-debug)-debug[Use this argument if you want to build in debug.]' \
+    '(-simulator)-simulator[Use this if you want to application to be built and run on the simulator.]' \
+    '(-armv7)-armv7[Use this if you want to build for armv7.]' \
+    '(-armv7s)-armv7s[Use this if you want to build for armv7s.]' \
+    '(-arm64)-arm64[Use this if you want to build for arm64.]'
+)
+
+local -a _build_flash_options
+_build_flash_options=(
+    '(-debug)-debug[Use this argument if you want to build in debug.]' \
+    '(-browser)-browser[Use this argument to make the app run on browser. The default is slimerjs.]' \
+    '(-advanced-telemetry)-advanced-telemetry[Use this argument to enable advanced-telemetry for profiling in scout.]' \
+    '(-slimerjs)-slimerjs[Use this argument to make the app run on slimerjs which is a standalone tiny firefox.]'
+)
+
+local -a _build_html5_options
+_build_html5_options=(
+    '(-debug)-debug[Use this argument if you want to build in debug.]' \
+    '(-browser)-browser[Use this argument to make the app run on browser. The default is slimerjs.]' \
+    '(-slimerjs)-slimerjs[Use this argument to make the app run on slimerjs which is a standalone tiny firefox.]'
+)
+
 local -a _update_options
 _update_options=(
     '(-overridebranch)-overridebranch[If existent, sets the versions of each library to the specified branch.]'
@@ -72,10 +101,60 @@ _setup_plugin_list() {
     _wanted application expl 'setup' compadd $(command grep -hor "\"duellsetup.*\"" ~/.duell/lib_list | sort -u | awk '{ $0 = substr($0, 12); print substr($0, 0, length($0) -1); }')
 }
 
-__duell-setup() {
-}
+_duell_build()
+{
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
 
-__duell-repo_list() {
+    _arguments -C \
+        ':command:->command' \
+        '*::options:->options'
+
+   case $state in
+        (command)
+            _describe -t commands "duell build"
+            return
+        ;;
+
+        (options)
+            case $line[1] in
+                (android)
+                    _arguments \
+                        $_inherited_options \
+                        $_build_options \
+                        $_build_android_options
+                ;;
+
+                (ios)
+                    _arguments \
+                        $_inherited_options \
+                        $_build_options \
+                        $_build_ios_options
+                ;;
+
+                (flash)
+                    _arguments \
+                        $_inherited_options \
+                        $_build_options \
+                        $_build_flash_options
+                ;;
+
+                (html5)
+                    _arguments \
+                        $_inherited_options \
+                        $_build_options \
+                        $_build_html5_options
+                ;;
+
+                *)
+                    _arguments \
+                        $_inherited_options \
+                        $_build_options
+                ;;
+            esac
+            return
+        ;;
+    esac
 }
 
 local curcontext="$curcontext" state line
@@ -101,9 +180,8 @@ case $state in
         ;;
 
         (build)
+            _duell_build
             _arguments \
-                $_inherited_options \
-                $_build_options \
                 ':feature:_build_plugin_list'
         ;;
 
@@ -126,7 +204,6 @@ case $state in
         ;;
 
         (repo_list)
-            __duell-repo_list
             _arguments \
                 $_inherited_options \
                 $_repo_list_options
